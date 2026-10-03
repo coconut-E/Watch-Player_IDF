@@ -1,0 +1,44 @@
+# 本项目 LVGL 使用 main/lv_conf.h 配置 (而非 Kconfig/menuconfig)
+CONFIG_LV_CONF_SKIP=n
+CONFIG_LV_BUILD_EXAMPLES=n
+
+# SD 卡扫描需要中文长文件名 (参考工程扫描目录/触发文件为中文)
+CONFIG_FATFS_LFN_HEAP=y
+CONFIG_FATFS_API_ENCODING_UTF_8=y
+
+# 计算器 (fs_calculator.cpp) 使用 try/catch, 需要 C++ 异常
+CONFIG_COMPILER_CXX_EXCEPTIONS=y
+
+# LittleFS / NVS 写 flash 期间会关闭 cache, 此时 UART ISR 必须在 IRAM 内
+# (joltwallet/littlefs 组件 readme 明确要求; 本项目一直用 UART0 打日志)
+CONFIG_UART_ISR_IN_IRAM=y
+
+# 音乐 (fs_music.cpp): micro-mp3 解码器状态约 23KB, 优先放 PSRAM
+CONFIG_MICRO_MP3_PREFER_PSRAM=y
+
+# 设置 (fs_settings.cpp) 的 WiFi 扫描/连接/NTP 需要 WiFi 协议栈
+CONFIG_ESP_WIFI_ENABLED=y
+
+# 串口控制台 (app/console.c) 的 stats/taskmem 需要 FreeRTOS 任务快照与运行时间统计
+CONFIG_FREERTOS_USE_TRACE_FACILITY=y
+CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
+CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID=y
+
+# 提高 tick 频率: vTaskDelay(1) 由 10ms 降到 1ms, 避免视频循环被整 tick 拖延
+CONFIG_FREERTOS_HZ=1000
+
+# 深睡唤醒时跳过 APP 镜像校验 (checksum/SHA256), 加快手表唤醒启动;
+# 冷启动仍会校验。本工程未启用 Secure Boot, 且不使用 OTA 切换分区, 安全。
+CONFIG_BOOTLOADER_SKIP_VALIDATE_IN_DEEP_SLEEP=y
+
+# ===== 启动加速 =====
+# 跳过启动时对 PSRAM 的全片写读测试 (esp_psram.c s_test_psram, 由 cpu_start.c 调用);
+# 每次冷启/深睡唤醒都会跑, 8MB PSRAM 可省可观时间。代价: 不再在启动时发现 PSRAM 损坏。
+CONFIG_SPIRAM_MEMTEST=n
+
+# 关闭 2 阶段 bootloader 日志: 这些日志走 UART0, USB-Serial-JTAG 控制台本就看不到,
+# 关掉省下开机打印时间 (esp_rom 的 ROM log 不动, 否则会烧录 eFuse 不可逆)。
+CONFIG_BOOTLOADER_LOG_LEVEL_NONE=y
+
+# bootloader 用 -O2 (默认 -Os) 提升启动代码执行速度
+CONFIG_BOOTLOADER_COMPILER_OPTIMIZATION_PERF=y

@@ -1,0 +1,13 @@
+## IDF Component Manager Manifest File
+dependencies:
+  idf:
+    version: '>=5.5.5'
+  lvgl/lvgl: ==8.3.11
+  bitbank2/jpegdec: ^1.6.2
+  joltwallet/littlefs: ^1.22.3
+  esphome/micro-mp3: ==0.4.0
+  espressif/esp-dsp: ^1.8.0
+  # 天气 JSON 解析 (参考工程 ui_manager.cpp 用的就是 ArduinoJson v6 API:
+  # DynamicJsonDocument / deserializeJson / JsonArray)。必须锁 6.x,
+  # 7.x 删除了 DynamicJsonDocument。来自乐鑫组件市场 (国内可直连)。
+  bblanchon/arduinojson: ^6.21.6
