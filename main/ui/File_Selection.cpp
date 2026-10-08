@@ -53,8 +53,6 @@ static void check_and_adjust_containers(FileSelectionInstance* instance);
 static void quick_check_containers(FileSelectionInstance* instance);
 static void show_file_not_found_msgbox(void);
 static void msgbox_btn_cb(lv_event_t * e);
-static void fade_in_anim_cb(void* var, int32_t value);
-static void fade_in_anim_complete_cb(lv_anim_t* a);
 static void fade_out_anim_cb(void* var, int32_t value);
 static void fade_out_anim_complete_cb(lv_anim_t* a);
 
@@ -413,21 +411,6 @@ static void set_container_y_with_arc(FileSelectionInstance* instance, lv_obj_t* 
     apply_arc_effects(container, screen_y, CONTAINER_HEIGHT);
      // 强制更新滚动容器的布局
     lv_obj_update_layout(instance->scroll_content);
-}
-
-// 淡入动画回调
-static void fade_in_anim_cb(void* var, int32_t value) {
-    lv_obj_t* obj = (lv_obj_t*)var;
-    lv_obj_set_style_opa(obj, value, LV_PART_MAIN);
-}
-
-// 淡入动画完成回调
-static void fade_in_anim_complete_cb(lv_anim_t* a) {
-    FileSelectionInstance* instance = (FileSelectionInstance*)a->user_data;
-    if (instance) {
-        instance->is_animating = false;
-        printf("淡入动画完成\n");
-    }
 }
 
 // 淡出动画回调
@@ -970,23 +953,14 @@ FileSelectionInstance* file_selection_create(lv_obj_t* parent,
     g_file_selection_instance = instance;
     
     if (instance) {
-        lv_obj_set_style_opa(instance->view_container, LV_OPA_TRANSP, LV_PART_MAIN);
-        
-        memset(&instance->fade_in_anim, 0, sizeof(lv_anim_t));
+        /* 进入不透明度淡入已移除: 直接以完全不透明显示 */
+        lv_obj_set_style_opa(instance->view_container, LV_OPA_COVER, LV_PART_MAIN);
+
         memset(&instance->fade_out_anim, 0, sizeof(lv_anim_t));
-        
-        instance->is_animating = true;
+
+        instance->is_animating = false;
         instance->selected_index = -1;
         instance->selected_filename[0] = '\0';
-        
-        lv_anim_init(&instance->fade_in_anim);
-        lv_anim_set_var(&instance->fade_in_anim, instance->view_container);
-        lv_anim_set_values(&instance->fade_in_anim, LV_OPA_TRANSP, LV_OPA_COVER);
-        lv_anim_set_time(&instance->fade_in_anim, 500);
-        lv_anim_set_exec_cb(&instance->fade_in_anim, fade_in_anim_cb);
-        lv_anim_set_user_data(&instance->fade_in_anim, instance);
-        lv_anim_set_ready_cb(&instance->fade_in_anim, fade_in_anim_complete_cb);
-        lv_anim_start(&instance->fade_in_anim);
     }
     
     return instance;

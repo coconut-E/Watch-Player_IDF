@@ -65,7 +65,6 @@ typedef struct {
     bool is_animating;                // 是否正在动画中
 
     // 动画相关
-    lv_anim_t fade_in_anim;           // 淡入动画
     lv_anim_t fade_out_anim;          // 淡出动画
     int selected_index;               // 选择的索引
     char selected_filename[MAX_FILE_NAME_LEN]; // 选择的文件名

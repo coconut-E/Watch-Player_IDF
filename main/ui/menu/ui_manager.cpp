@@ -1553,11 +1553,6 @@ static void create_fullscreen_container(uint32_t func_index) {
         g_anim_end_center.y = 140;
         lv_obj_clear_flag(main_container, LV_OBJ_FLAG_HIDDEN);
         lv_obj_update_layout(main_container);
-        // 文件选择器在场时降低不透明度 (参考工程)
-        if (g_file_selection_instance && g_file_selection_instance->view_container) {
-            lv_obj_set_style_opa(g_file_selection_instance->view_container, 180, LV_PART_MAIN);
-            lv_obj_update_layout(fullscreen_container);
-        }
 
         lv_img_dsc_t* bg_dsc = lv_snapshot_take(main_container, LV_IMG_CF_TRUE_COLOR);
         if (bg_dsc && bg_dsc->data) {

@@ -1498,7 +1498,7 @@ static void handle_menu_selection(const char* itemText) {
         show_wifi_page();
     } else if (strcmp(itemText, "壁纸") == 0) {
         show_wallpaper_page();
-    } else if (strcmp(itemText, "电池校准") == 0) {
+    } else if (strcmp(itemText, "电量校准") == 0) {
         show_battery_calibration_page();
     } else if (strcmp(itemText, "自动轮播间隔") == 0) {
         show_carousel_interval_page();
